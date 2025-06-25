@@ -176,3 +176,66 @@ A typical command looks like
 singularity exec /path/to/souporcell_latest.sif souporcell_pipeline.py -i /path/to/possorted_genome_bam.bam -b /path/to/barcodes.tsv -f /path/to/reference.fasta -t num_threads_to_use -o output_dir_name -k num_clusters
 
 ```
+
+
+## Practice / Testing Data Set
+
+To test MetaLoRe, you can use public long-read metagenomic data from NCBI. For example:
+
+**NCBI BioProject**: [PRJNA628641](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA628641)  
+This project contains multiple metagenomic samples sequenced using Oxford Nanopore (ONT).
+
+### Download Example Data
+
+You can use `prefetch` and `fasterq-dump` (from [SRA Toolkit](https://github.com/ncbi/sra-tools)) to download FASTQ files:
+
+```bash
+# Example for one sample
+prefetch SRR11626792
+fasterq-dump SRR11626792
+
+# Optional: gzip compress the FASTQ file
+gzip SRR11626792.fastq
+```
+
+And if you don't have a human reference sitting around, grab one here
+
+```
+wget http://cf.10xgenomics.com/supp/cell-exp/refdata-cellranger-GRCh38-3.0.0.tar.gz
+tar -xzvf refdata-cellranger-GRCh38-3.0.0.tar.gz
+
+```
+
+### Taxonomic Classification Database (Centrifuge)
+
+MetaLoRe uses [Centrifuge](https://ccb.jhu.edu/software/centrifuge/) for taxonomic classification of raw reads. To enable this step, you must manually download and extract a compatible Centrifuge database.
+
+We recommend using the "human+prokaryotes+viral+custom" database provided by the developers:
+
+**Download:**
+
+```bash
+wget https://zenodo.org/record/3732127/files/h+p+v+c.tar.gz?download=1 -O hpvc.tar.gz
+tar -xzvf hpvc.tar.gz
+```
+
+### Genome Binning Taxonomy Database (GTDB-Tk)
+
+MetaLoRe uses [GTDB-Tk](https://ecogenomics.github.io/GTDBTk/) to assign taxonomy to genome bins after binning. GTDB-Tk requires a dedicated reference database, which must be downloaded manually.
+
+#### Download GTDB-Tk Database
+
+Download the full data package (latest release) from the official GTDB server:
+
+```bash
+wget https://data.ace.uq.edu.au/public/gtdb/data/releases/latest/auxillary_files/gtdbtk_package/full_package/gtdbtk_data.tar.gz
+tar -xvzf gtdbtk_data.tar.gz
+
+```
+
+Now you should be ready to test it out
+
+```
+singularity exec /path/to/souporcell_latest.sif souporcell_pipeline.py -i A.merged.bam -b GSM2560245_barcodes.tsv -f refdata-cellranger-GRCh38-3.0.0/fasta/genome.fa -t 8 -o demux_data_test -k 4
+
+```
