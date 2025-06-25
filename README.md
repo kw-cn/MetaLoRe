@@ -27,7 +27,7 @@ apptainer --version
 You should now be able to run XXXX.py and XXXX.py through the singularity container. Singularity automatically mounts the current working directory and directories downstream from where you run it, otherwise you would need to manually mount those directories. 
 
 ### Single-Sample Analysis Overview 
-MetaLoRe’s single-sample module (run via `MetaLoRe-Base.py`) automates end-to-end processing of long-read metagenomic data (ONT or PacBio). Starting from raw FASTQ, it performs quality filtering and optional host-read removal, then generates interactive QC reports. Using those filtered reads, it first carries out taxonomic classification (Centrifuge/Krona) and functional annotation (Abricate), and then bins genomes (SemiBin2). Finally, each recovered bin is taxonomically classified with GTDB-Tk and functionally annotated with Prokka, yielding standardized output files and publication-ready figures for every sample.
+MetaLoRe’s single-sample module `MetaLoRe-Base.py` automates end-to-end processing of long-read metagenomic data (ONT or PacBio). Starting from raw FASTQ, it performs quality filtering and optional host-read removal, then generates interactive QC reports. Using those filtered reads, it first carries out taxonomic classification (Centrifuge/Krona) and functional annotation (Abricate), and then bins genomes (SemiBin2). Finally, each recovered bin is taxonomically classified with GTDB-Tk and functionally annotated with Prokka, yielding standardized output files and publication-ready figures for every sample.
 
 
 #### Usage Note for Single‐Sample Module  
