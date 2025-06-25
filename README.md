@@ -27,7 +27,21 @@ apptainer --version
 You should now be able to run XXXX.py and XXXX.py through the singularity container. Singularity automatically mounts the current working directory and directories downstream from where you run it, otherwise you would need to manually mount those directories. 
 
 ### Single-Sample Analysis Overview 
-MetaLoRe’s single-sample module automates the full processing of long-read metagenomic data (ONT or PacBio).This module is run using MetaLoRe-Base.py. Starting from raw FASTQ, it performs quality filtering, optional host-read removal, and generates interactive QC reports. The pipeline then assembles contigs (Flye), converts to FASTA, annotates genes (Prokka/Abricate), classifies taxonomy (Centrifuge/Krona), and bins genomes (MetaBAT2, MaxBin2, SemiBin2), producing standardized output files and publication-ready plots for each sample.
+MetaLoRe’s single-sample module (run via `MetaLoRe-Base.py`) automates end-to-end processing of long-read metagenomic data (ONT or PacBio). Starting from raw FASTQ, it performs quality filtering and optional host-read removal, then generates interactive QC reports. Using those filtered reads, it first carries out taxonomic classification (Centrifuge/Krona) and functional annotation (Abricate), and then bins genomes (SemiBin2). Finally, each recovered bin is taxonomically classified with GTDB-Tk and functionally annotated with Prokka, yielding standardized output files and publication-ready figures for every sample.
+
+
+#### Usage Note for Single‐Sample Module  
+`MetaLoRe-Base.py` requires a three‐column TSV file listing each sample’s ID, the path to its raw FASTQ file, and the sequencing type (`ont` or `pacbio`). For example:
+
+```tsv
+sample        fastq_path                      seqtype
+SRR11626792   /path/to/SRR11626792.fastq      ont
+SRR11626793   /path/to/SRR11626793.fastq      ont
+SRR11626794   /path/to/SRR11626794.fastq      pacbio
+
+```
+
+
 The options for using MetaLoRe-Base.py are:
 
 ```
@@ -90,7 +104,18 @@ singularity exec /path/to/souporcell_latest.sif souporcell_pipeline.py -i /path/
 ```
 
 ### Differential Analysis Overview 
-Once all samples have been processed, MetaLoRe’s comparative module merges taxonomic and functional abundance tables and conducts group-wise statistics and diversity analyses. It supports LEfSe and STAMP for differential feature discovery, computes α-diversity (Shannon, Simpson) and β-diversity (Bray–Curtis) metrics, and performs ordination (PCoA/NMDS) with PERMANOVA. The result is a comprehensive set of tables and figures highlighting biomarkers, group differences, and overall community structure across sample groups.
+Once all samples have been processed via `MetaLoRe-Compare.py`, the comparative module merges taxonomic and functional abundance tables and carries out differential feature analysis and community structure comparisons. It supports LEfSe and STAMP to identify statistically significant biomarkers, computes β-diversity (Bray–Curtis) distances, and performs ordination (PCoA/NMDS) with PERMANOVA testing. The result is a cohesive suite of tables and figures that highlight key features differing between groups and reveal overall community patterns.
+
+#### Usage Note for Differential Analysis Module  
+`MetaLoRe-Compare.py` requires a sample-to-group mapping file in TSV format, for example:
+
+```tsv
+SRR11626798    I
+SRR11626799    I
+SRR11626800    U
+SRR11626801    U
+```
+
 The options for using  MetaLoRe-Compare.py are:
 
 ```
